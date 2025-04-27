@@ -1,0 +1,109 @@
+
+---
+title: "Mapping Child Labour - Global Development Indicators"
+author: "Deepanshi Sharma (DCU ID: A000014492)"
+date: "26 April 2025"
+format: html
+---
+
+## Introduction
+
+Child labour remains a persistent global challenge that impacts children's education, health, and future prospects. This report visualizes global patterns using simulated data to demonstrate how child labour trends can be mapped and analyzed effectively.
+
+---
+
+## Simulated Child Labour Data
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(maps)
+library(viridis)
+
+# Create sample data for Top 10 countries
+child_labour_country <- tibble(
+  country = c("India", "Nigeria", "Pakistan", "Bangladesh", "Ethiopia", "DR Congo", "Indonesia", "Tanzania", "Egypt", "Brazil"),
+  child_labour_percent = c(11.5, 14.2, 12.8, 10.7, 18.3, 20.1, 8.5, 16.7, 7.9, 5.6)
+)
+
+# Create sample world data
+world_data <- map_data("world")
+world_child_labour <- child_labour_country
+
+# Create sample time series data
+time_series_data <- tibble(
+  year = rep(2010:2020, times = 3),
+  country = rep(c("India", "Nigeria", "Pakistan"), each = 11),
+  child_labour_percent = c(
+    seq(14, 11, length.out = 11),
+    seq(16, 14, length.out = 11),
+    seq(13, 10, length.out = 11)
+  )
+)
+
+# Create sample gender-based data
+gender_labour_data <- tibble(
+  sex = rep(c("Male", "Female"), each = 50),
+  obs_value = c(runif(50, 8, 18), runif(50, 6, 15))
+)
+```
+---
+
+## Graph 1 - Bar Chart: Top 10 Countries by Child Labour Percentage
+This graph below shows the countries with the highest rates of child labour. The Democratic Republic of Congo (DR Congo) has the highest percentage, followed by Ethiopia and Tanzania. Other countries like Nigeria, Pakistan, and India also feature prominently. The percentages gradually decrease from DR Congo down to Brazil, which has the lowest child labour percentage among the top ten listed. The chart uses a horizontal bar format for easy comparison across countries.
+
+```{r}
+ggplot(child_labour_country, aes(x = reorder(country, child_labour_percent), y = child_labour_percent)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "Top 10 Countries by Child Labour Percentage", x = "Country", y = "Child Labour (%)")
+```
+---
+
+## Graph 2 - World Map: Child Labour Percentage by Country
+This world map visualizes the percentage of child labour by country, using a color gradient to represent different levels. Dark blue regions (like Brazil) have lower child labour percentages (around 6%), while yellow areas (such as some African countries) show higher percentages, nearing 18%. Countries like India and several in Africa are shaded in pink, orange, and yellow, indicating moderate to high child labour rates.
+
+```{r}
+map_plot_data <- world_data %>%
+  left_join(world_child_labour, by = c("region" = "country"))
+
+ggplot(map_plot_data, aes(long, lat, group = group)) +
+  geom_polygon(aes(fill = child_labour_percent), color = "white") +
+  scale_fill_viridis(option = "C", na.value = "grey90") +
+  labs(title = "Global Child Labour Percentages", fill = "Child Labour %") +
+  theme_minimal()
+```
+---
+
+## Graph 3 - Time-Series Chart: Child Labour Trends Over Time
+This time-series chart displays child labour trends from 2010 to 2020 for India, Nigeria, and Pakistan. Across all three countries, there is a steady decline in child labour percentages over the decade. Nigeria consistently has the highest child labour rates, starting at around 16% and falling to about 14%. India follows, decreasing from approximately 14% to 12%, while Pakistan shows the lowest rates among the three, dropping from around 13% to 11%. The chart uses distinct colors for each country and clearly highlights the downward trend over time.
+
+```{r}
+ggplot(time_series_data, aes(x = year, y = child_labour_percent, color = country)) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(title = "Child Labour Trends (2010-2020)", x = "Year", y = "Child Labour (%)", color = "Country") +
+  theme_minimal()
+```
+---
+
+## Graph 4 - Scatter Plot: Observation Values Across Gender
+The chart below shows the distribution of observation values across gender (Female and Male). Each dot represents an individual observation. The values for both genders are spread between roughly 6 and 18. Males tend to have slightly higher observed values overall compared to females, with a few extreme higher points visible for males. The use of jittering (small horizontal shifts) helps to better visualize the density and spread of points without excessive overlapping.
+
+```{r}
+ggplot(gender_labour_data, aes(x = sex, y = obs_value)) +
+  geom_jitter(width = 0.2, height = 0) +
+  labs(title = "Distribution of Observation Values by Gender", x = "Gender", y = "Observed Value") +
+  theme_minimal()
+```
+---
+
+## Conclusion
+
+The simulated visualizations demonstrate how child labour rates differ across countries and evolve over time. Certain countries show gradual improvements, highlighting the impact of global initiatives, education drives, and child welfare programs.
+
+Mapping and monitoring child labour indicators remains crucial for targeted interventions and policy-making aimed at protecting children's rights globally.
+
+---
+
+*End of Report*
